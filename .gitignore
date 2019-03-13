@@ -1,3 +1,4 @@
 *.exe
 launch.json
 /hw1_tree/testdata/*
+/hw1_tree/debug
