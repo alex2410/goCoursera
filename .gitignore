@@ -1,1 +1,3 @@
 *.exe
+launch.json
+/hw1_tree/testdata/*

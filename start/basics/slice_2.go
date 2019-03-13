@@ -10,7 +10,8 @@ func main() {
 	sl1 := buf[1:4] // [2, 3, 4]
 	sl2 := buf[:2]  // [1, 2]
 	sl3 := buf[2:]  // [3, 4, 5]
-	fmt.Println(sl1, sl2, sl3)
+	sl4 := buf[2:5] // [3, 4, 5]
+	fmt.Println(sl1, sl2, sl3, sl4)
 
 	newBuf := buf[:] // [1, 2, 3, 4, 5]
 	// buf = [9, 2, 3, 4, 5], т.к. та же память

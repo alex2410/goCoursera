@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	// цикл без условия, while(true) OR for(;;;)
+	// цикл без условия, while(true) OR for(;;)
 	for {
 		fmt.Println("loop iteration")
 		break
@@ -24,12 +24,24 @@ func main() {
 		}
 	}
 
+	for i := 0; i < 10; i = i + 2 {
+		fmt.Println(i)
+		if i > 4 {
+			fmt.Println("i > 4")
+		}
+	}
+
 	// операции по slice
 	sl := []int{1, 2, 3}
 	idx := 0
 
 	for idx < len(sl) {
 		fmt.Println("while-stype loop, idx:", idx, "value:", sl[idx])
+		idx++
+	}
+
+	for idx < 10 {
+		fmt.Println(sl[idx%len(sl)])
 		idx++
 	}
 
@@ -43,8 +55,17 @@ func main() {
 		fmt.Println("range slice by idx-value", idx, val)
 	}
 
+	for i, value := range sl {
+		fmt.Println(i, ":", value)
+	}
 	// операции по map
 	profile := map[int]string{1: "Vasily", 2: "Romanov"}
+
+	myMap := map[string]int{"one": 1, "two": 2}
+
+	for k, v := range myMap {
+		fmt.Println(k, ":", v)
+	}
 
 	for key := range profile {
 		fmt.Println("range map by key", key)

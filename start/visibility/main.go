@@ -1,8 +1,8 @@
 package main
 
 import (
-	"coursera/visibility/person"
 	"fmt"
+	"goCoursera/start/visibility/person"
 )
 
 func main() {

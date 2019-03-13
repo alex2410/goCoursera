@@ -9,6 +9,8 @@ func main() {
 		"lastName": "Romanov",
 	}
 
+	user["fio"] = "fio"
+
 	// сразу с нужной ёмкостью
 	profile := make(map[string]string, 10)
 

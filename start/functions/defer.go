@@ -3,6 +3,7 @@ package main
 import "fmt"
 
 func getSomeVars() string {
+	defer fmt.Println("getSomeVars defer")
 	fmt.Println("getSomeVars execution")
 	return "getSomeVars result"
 }

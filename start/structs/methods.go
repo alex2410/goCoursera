@@ -12,6 +12,10 @@ func (p Person) UpdateName(name string) {
 	p.Name = name
 }
 
+func (p *Person) SetId(id int) {
+	p.Id = id
+}
+
 // изменяет оригинальную структуру
 func (p *Person) SetName(name string) {
 	p.Name = name
@@ -33,16 +37,22 @@ func (sl *MySlice) Add(val int) {
 	*sl = append(*sl, val)
 }
 
+func (sl MySlice) Print() {
+	fmt.Println(sl)
+}
+
 func (sl *MySlice) Count() int {
 	return len(*sl)
 }
 
 func main() {
-	// pers := &Person{1, "Vasily"}
-	pers := new(Person)
-	pers.SetName("Vasily Romanov")
-	// (&pers).SetName("Vasily Romanov")
-	// fmt.Printf("updated person: %#v\n", pers)
+	pers1 := &Person{1, "Vasily"}
+	pers := Person{1, "Vasily"}
+	pers1.SetName("Vasily Romanov")
+	(&pers).SetName("Vasily Romanov")
+	pers.SetId(11)
+	fmt.Printf("updated person: %#v\n", pers)
+	fmt.Printf("updated person: %#v\n", pers1)
 
 	var acc Account = Account{
 		Id:   1,
@@ -56,9 +66,10 @@ func main() {
 	acc.SetName("romanov.vasily")
 	acc.Person.SetName("Test")
 
-	// fmt.Printf("%#v \n", acc)
+	fmt.Printf("%#v \n", acc)
 
 	sl := MySlice([]int{1, 2})
 	sl.Add(5)
+	sl.Print()
 	fmt.Println(sl.Count(), sl)
 }
