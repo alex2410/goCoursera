@@ -1,19 +1,20 @@
 package main
 
 import (
-	"fmt"
-	//"io"
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
-	//"path/filepath"
-	//"strings"
 )
 
-const file = "├───"
-const lastFile = "└───"
-const fileLevelSep = "│\t"
+const (
+	middleFile = "├───"
+	lastFile   = "└───"
+	fileLine   = "│\t"
+	separator  = string(os.PathSeparator)
+	tab        = "\t"
+)
 
 func main() {
 	out := new(bytes.Buffer)
@@ -30,59 +31,80 @@ func main() {
 }
 
 func dirTree(out *bytes.Buffer, path string, printFiles bool) error {
-	return dirTree1(out, path, printFiles, "")
+	return dirTreeInner(out, path, printFiles, "")
 }
 
-func dirTree1(out *bytes.Buffer, path string, printFiles bool, st string) error {
-	separator := string(os.PathSeparator)
-
+func dirTreeInner(out *bytes.Buffer, path string, printFiles bool, previousStart string) error {
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		return err
 	}
 
-	for i, f := range files {
-		startText := file
-		isLast := i+1 == len(files)
-		nextStart := st
+	for i, file := range files {
+		//prepare text
+		text := previousStart + middleFile + file.Name()
+		isLast := isLastFile(i, files, printFiles)
 		if isLast {
-			startText = lastFile
-			nextStart = st + "\t"
-		} else {
-			nextStart = st + fileLevelSep
+			text = previousStart + lastFile + file.Name()
 		}
-		fi, err := os.Stat(path + separator + f.Name())
+
+		fi, err := os.Stat(path + separator + file.Name())
 		if err != nil {
 			return err
 		}
 
-		if f.IsDir() {
-			print(out, st, startText, f.Name(), fi.Size(), printFiles, true)
-			err := dirTree1(out, path+separator+f.Name(), printFiles, nextStart)
+		if file.IsDir() {
+			//print file
+			print(out, text, fi.Size(), printFiles, true)
+
+			//calculate next line start
+			nextStart := previousStart
+			if !isLast {
+				nextStart += fileLine
+			} else {
+				nextStart += tab
+			}
+			//print childs
+			err := dirTreeInner(out, path+separator+file.Name(), printFiles, nextStart)
 			if err != nil {
 				return err
 			}
 		} else if printFiles {
-			print(out, st, startText, f.Name(), fi.Size(), printFiles, false)
+			//print file
+			print(out, text, fi.Size(), printFiles, false)
 		}
 
 	}
 	return nil
 }
 
-func print(out *bytes.Buffer, start string, startText string, name string, size int64, printFiles bool, isFolder bool) {
+func print(out *bytes.Buffer, text string, size int64, printFiles bool, isFolder bool) {
 	if printFiles {
 		sizeText := " (empty)"
 		if size > 0 {
-			sizeText = " (" + strconv.FormatInt(size, 10) + "b)"
+			sizeText = fmt.Sprintf(" (%sb)", strconv.FormatInt(size, 10))
 		}
 		if isFolder {
 			sizeText = ""
 		}
-		out.Write([]byte("\n"))
-		out.Write([]byte(fmt.Sprintf("%s%s%s%s", start, startText, name, sizeText)))
+		out.Write([]byte(fmt.Sprintf("%s%s\n", text, sizeText)))
 	} else {
-		out.Write([]byte("\n"))
-		out.Write([]byte(fmt.Sprintf("%s%s%s", start, startText, name)))
+		out.Write([]byte(fmt.Sprintf("%s\n", text)))
 	}
+}
+
+func isLastFile(currentIndex int, files []os.FileInfo, printFiles bool) bool {
+	if currentIndex+1 == len(files) {
+		return true
+	}
+	if printFiles {
+		return false
+	}
+	for i := currentIndex + 1; i < len(files); i++ {
+		file := files[i]
+		if file.IsDir() {
+			return false
+		}
+	}
+	return true
 }
